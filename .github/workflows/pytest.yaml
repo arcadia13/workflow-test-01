@@ -6,6 +6,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      DB_USER: 'postgres'
 
     steps:
       - name: Checkout repository
@@ -21,3 +23,20 @@ jobs:
 
       - name: Run PyTest
         run: pytest
+      
+      - name: Failure Log
+        if: failure()
+        run: echo "1つ前のstepが失敗しました"
+
+      - name: Print DB_USER
+        run: echo "DB_USER -> ${DB_USER}"
+
+      - name: Print secrets
+        run: echo "DUMMY_API_KEY -> ${{ secrets.DUMMY_API_KEY}}"
+      
+      - name: Get time
+        id: get_time
+        run: echo "time=$(date)" >> $GITHUB_OUTPUT
+
+      - name: Print github output
+        run:  echo "1つ前のstepで取得した時間 -> ${{ steps.get_time.outputs.time }}"
